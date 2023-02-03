@@ -7,7 +7,6 @@ Scouting app for 2023 Charged Up season.
 ### Cloning the repo
 
 ```sh
-pip install pre-commit
 git clone git@github.com:NeatTeam1943/2023-ScoutingApp.git
 cd 2023-ScoutingApp
 ```
