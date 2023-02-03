@@ -1,0 +1,10 @@
+repos:
+- repo: https://github.com/Cretezy/flutter-format-pre-commit
+  rev: "4a1df675bb74dea371c17934933e257e46f8dd98"
+  hooks:
+    - id: flutter-format
+
+- repo: https://github.com/fluttercommunity/import_sorter
+  rev: 'f350497a11b1285c695595049e95a420068e7a9f'
+  hooks:
+    - id: flutter-import-sorter
