@@ -1,0 +1,4 @@
+enum GamePiece {
+  cube,
+  cone,
+}

@@ -1,0 +1,4 @@
+enum PickupZone {
+  feeder,
+  floor,
+}
