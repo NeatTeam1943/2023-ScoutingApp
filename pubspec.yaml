@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   import_sorter: ^4.6.0
   csv: ^5.0.1
+  dropdown_plus: ^0.0.9
 
 dev_dependencies:
   flutter_test:
