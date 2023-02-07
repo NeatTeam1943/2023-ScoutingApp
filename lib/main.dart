@@ -1,42 +1,24 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:neatteam_scouting_2023/pages/home_page.dart';
+import 'package:neatteam_scouting_2023/pages/match_page.dart';
+import 'package:neatteam_scouting_2023/pages/team_info_form_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ScoutingApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ScoutingApp extends StatelessWidget {
+  const ScoutingApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NeatTeam Scouting 2023',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(title: 'NeatTeam Scouting 2023'),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const Center(),
+      routes: {
+        HomePage.routeName: (context) => const HomePage(title: 'NeatTeam Scouting 2023'),
+        TeamInfoFormPage.routeName: (context) => const TeamInfoFormPage(),
+        MatchPage.routeName: (context) => const MatchPage()
+      },
     );
   }
 }
