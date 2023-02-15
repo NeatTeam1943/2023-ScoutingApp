@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:csv/csv.dart';
+
+// Project imports:
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/utils/utils.dart';
 
@@ -12,8 +15,8 @@ class FrcTeams {
           eol: '\n',
         )
         .map((e) => Team()
-          ..teamNumber = e[0]
-          ..teamName = e[1])
+          ..number = e[0]
+          ..name = e[1])
         .toList();
   }
 }

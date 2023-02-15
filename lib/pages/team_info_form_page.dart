@@ -1,5 +1,10 @@
-import 'package:dropdown_plus/dropdown_plus.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
+import 'package:dropdown_plus/dropdown_plus.dart';
+
+// Project imports:
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
@@ -68,7 +73,7 @@ class _TeamInfoForm extends State<TeamInfoFormPage> {
             StyleFormField(
               field: TextDropdownFormField(
                 options: _teams.map((team) {
-                  return '${team.teamName} #${team.teamNumber}';
+                  return '${team.name} #${team.number}';
                 }).toList(),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
