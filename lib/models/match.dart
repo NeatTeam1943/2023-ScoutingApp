@@ -12,7 +12,7 @@ class Match {
 
   String scouterName;
 
-  int? matchNumber;
+  int? number;
   Alliance? alliance;
   DriverStation? driverStation;
 

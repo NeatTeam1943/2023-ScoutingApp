@@ -112,7 +112,7 @@ class _TeamInfoForm extends State<TeamInfoFormPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     Match match = Match(scouterName: '');
-                    match.matchNumber = int.parse(_matchController.text);
+                    match.number = int.parse(_matchController.text);
                     Navigator.pushNamed(context, '/match', arguments: match);
                   }
                 },
@@ -121,7 +121,7 @@ class _TeamInfoForm extends State<TeamInfoFormPage> {
                   style: TextStyle(fontSize: 35),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
