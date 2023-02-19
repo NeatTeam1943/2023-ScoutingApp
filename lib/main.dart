@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:neatteam_scouting_2023/pages/autonomous_page.dart';
 
 // Package imports:
 import 'package:provider/provider.dart';
@@ -27,7 +28,8 @@ class ScoutingApp extends StatelessWidget {
         HomePage.routeName: (context) =>
             const HomePage(title: 'NeatTeam Scouting 2023'),
         TeamInfoPage.routeName: (context) => const TeamInfoPage(),
-        MatchPage.routeName: (context) => const MatchPage()
+        MatchPage.routeName: (context) => const MatchPage(),
+        AutonomousPage.routeName: (context) => const AutonomousPage(),
       },
     );
   }
