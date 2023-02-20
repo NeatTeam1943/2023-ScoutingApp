@@ -7,6 +7,7 @@ import 'package:neatteam_scouting_2023/enums/charge_station.dart';
 import 'package:neatteam_scouting_2023/models/autonomous.dart';
 import 'package:neatteam_scouting_2023/models/cycle.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
+import 'package:neatteam_scouting_2023/widgets/cycles_list.dart';
 
 class AutonomousPage extends StatefulWidget {
   const AutonomousPage({super.key});
@@ -106,22 +107,8 @@ class _AutonomousState extends State<AutonomousPage> {
                 title: const Text("Robot has game piece"),
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: ListView.builder(
-                  itemCount: model.cycles.length,
-                  itemBuilder: (_, index) {
-                    Cycle cycle = model.cycles[index];
-                    return ListTile(
-                      title: Text("Cycle ${cycle.cycleNumber}"),
-                      onTap: () => Navigator.pushNamed(context, '/cycle',
-                          arguments: cycle),
-                    );
-                  },
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                ),
-              ),
+            CyclesList(
+              list: model.cycles,
             ),
           ],
         ),
