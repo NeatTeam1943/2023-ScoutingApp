@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:dropdown_plus/dropdown_plus.dart';
+import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:neatteam_scouting_2023/enums/alliance.dart';
 import 'package:neatteam_scouting_2023/enums/driver_station.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
+import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
 
@@ -172,8 +174,12 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   }
 
   /// Extract team number from "<Team name> #<Team number>"
-  int _extractTeamNumber(String fullTeamText) =>
-      int.parse(fullTeamText.split("#")[1]);
+  Team _makeTeamFromText(String fullTeamText) {
+    List<String> parts = fullTeamText.split(" #");
+    return Team()
+      ..number = int.parse(parts[1])
+      ..name = parts[0];
+  }
 
   /// Validate form and submit it (Moving to the next page [MatchPage])
   void _submitForm() {
@@ -184,12 +190,11 @@ class _TeamInfoForm extends State<TeamInfoPage> {
 
       _match.number = int.parse(_matchNumberController.text);
       _match.alliance = _selectedAlliance;
-      _match.team = Team()
-        ..number = _extractTeamNumber(_selectedTeamController.value!);
+      _match.team = _makeTeamFromText(_selectedTeamController.value!);
+      _match.driverStation = _selectedDriverStation;
 
-      Match match = Match(scouterName: '');
-      match.number = int.parse(_matchNumberController.text);
-      Navigator.pushNamed(context, '/match', arguments: match);
+      Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
+      Navigator.pushNamed(context, '/match', arguments: _match);
     }
   }
 
