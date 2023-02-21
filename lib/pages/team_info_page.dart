@@ -6,6 +6,7 @@ import 'package:dropdown_plus/dropdown_plus.dart';
 
 // Project imports:
 import 'package:neatteam_scouting_2023/enums/alliance.dart';
+import 'package:neatteam_scouting_2023/enums/driver_station.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
@@ -25,6 +26,8 @@ class _TeamInfoForm extends State<TeamInfoPage> {
 
   final _matchNumberController = TextEditingController();
   final _selectedTeamController = DropdownEditingController<String>();
+
+  DriverStation? _selectedDriverStation = DriverStation.first;
   Alliance? _selectedAlliance = Alliance.blue;
 
   final _match = Match(scouterName: '');
@@ -50,64 +53,82 @@ class _TeamInfoForm extends State<TeamInfoPage> {
       appBar: AppBar(title: const Text('Team info')),
       body: SingleChildScrollView(
         child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            // Match number field
-            StyleFormField(
-              field: TextFormField(
-                controller: _matchNumberController,
-                validator: _validateMatchNumber,
-                keyboardType: TextInputType.number,
-                decoration: _outline(label: 'Match'),
-              ),
-            ),
-
-            // Team selection
-            StyleFormField(
-              field: TextDropdownFormField(
-                controller: _selectedTeamController,
-                validator: _validateTeam,
-                dropdownHeight: 420,
-                decoration: _outline(
-                  label: 'Select team',
-                  suffixIcon: const Icon(Icons.arrow_drop_down),
-                ),
-                options: _teams.map((team) {
-                  return '${team.name} #${team.number}';
-                }).toList(),
-              ),
-            ),
-
-            // Alliance selection
-            StyleFormField(
-              field: DropdownButtonFormField<Alliance>(
-                value: _selectedAlliance,
-                validator: _validateAlliance,
-                decoration: _outline(label: 'Select alliance'),
-                onChanged: (color) => setState(() => _selectedAlliance = color),
-                items: Alliance.values.map((color) {
-                  return DropdownMenuItem<Alliance>(
-                    value: color,
-                    child: Text(color.name),
-                  );
-                }).toList(),
-              ),
-            ),
-
-            // Submission button
-            StyleFormField(
-              field: ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text(
-                  'NEXT',
-                  style: TextStyle(fontSize: 35),
+          key: _formKey,
+          child: Column(
+            children: [
+              // Match number field
+              StyleFormField(
+                field: TextFormField(
+                  controller: _matchNumberController,
+                  validator: _validateMatchNumber,
+                  keyboardType: TextInputType.number,
+                  decoration: _outline(label: 'Match'),
                 ),
               ),
-            ),
-          ],
+
+              // Team selection
+              StyleFormField(
+                field: TextDropdownFormField(
+                  controller: _selectedTeamController,
+                  validator: _validateTeam,
+                  dropdownHeight: 420,
+                  decoration: _outline(
+                    label: 'Select team',
+                    suffixIcon: const Icon(Icons.arrow_drop_down),
+                  ),
+                  options: _teams.map((team) {
+                    return '${team.name} #${team.number}';
+                  }).toList(),
+                ),
+              ),
+
+              // Alliance selection
+              StyleFormField(
+                field: DropdownButtonFormField<Alliance>(
+                  value: _selectedAlliance,
+                  validator: _validateAlliance,
+                  decoration: _outline(label: 'Select alliance'),
+                  onChanged: (color) =>
+                      setState(() => _selectedAlliance = color),
+                  items: Alliance.values.map((color) {
+                    return DropdownMenuItem<Alliance>(
+                      value: color,
+                      child: Text(color.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              // Driver station selection
+              StyleFormField(
+                field: DropdownButtonFormField<DriverStation>(
+                  value: _selectedDriverStation,
+                  validator: _validateDriverStation,
+                  decoration: _outline(label: 'Select driver station'),
+                  onChanged: (color) =>
+                      setState(() => _selectedDriverStation = color),
+                  items: DriverStation.values.map((station) {
+                    return DropdownMenuItem<DriverStation>(
+                      value: station,
+                      child: Text(station.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              // Submission button
+              StyleFormField(
+                field: ElevatedButton(
+                  onPressed: _submitForm,
+                  child: const Text(
+                    'NEXT',
+                    style: TextStyle(fontSize: 35),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -136,6 +157,15 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   String? _validateAlliance(value) {
     if (value == null) {
       return 'Please select an alliance!';
+    }
+
+    return null;
+  }
+
+  /// Returns error message ([String]) in case [value] is empty
+  String? _validateDriverStation(value) {
+    if (value == null) {
+      return 'Please select a driver station!';
     }
 
     return null;
