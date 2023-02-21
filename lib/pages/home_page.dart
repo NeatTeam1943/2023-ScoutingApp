@@ -1,6 +1,8 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
 
+// Project imports:
+import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
 import '../models/team.dart';
 
 class HomePage extends StatefulWidget {
@@ -40,13 +42,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: ListView.builder(
-            itemCount: _teams.length,
-            itemBuilder: (_, index) => ListTile(
-              title: Text(_teams[index].teamName!),
-              subtitle: Text('#${_teams[index].teamNumber}'),
-            )
+          itemCount: _teams.length,
+          itemBuilder: (_, index) => ListTile(
+            title: Text(_teams[index].name!),
+            subtitle: Text('#${_teams[index].number}'),
+          ),
         ),
-      )
+      ),
     );
   }
 }

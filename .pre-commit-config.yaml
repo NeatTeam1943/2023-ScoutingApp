@@ -1,6 +1,6 @@
 repos:
-- repo: https://github.com/Cretezy/flutter-format-pre-commit
-  rev: "4a1df675bb74dea371c17934933e257e46f8dd98"
+- repo: https://github.com/guy-av/flutter-format-pre-commit
+  rev: "3f799e8fe06fdc62a12b0acbdffc6870ceb23750"
   hooks:
     - id: flutter-format
 
