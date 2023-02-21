@@ -39,6 +39,7 @@ dependencies:
   csv: ^5.0.1
   dropdown_plus: ^0.0.9
   provider: ^6.0.5
+  path_provider: ^2.0.12
 
 dev_dependencies:
   flutter_test:
