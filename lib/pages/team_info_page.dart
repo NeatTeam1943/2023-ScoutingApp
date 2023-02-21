@@ -48,7 +48,8 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Team info')),
-      body: Form(
+      body: SingleChildScrollView(
+        child: Form(
         key: _formKey,
         child: Column(
           children: [
@@ -107,6 +108,7 @@ class _TeamInfoForm extends State<TeamInfoPage> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -146,6 +148,10 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   /// Validate form and submit it (Moving to the next page [MatchPage])
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      if (_selectedTeamController.value == null) {
+        return;
+      }
+
       _match.number = int.parse(_matchNumberController.text);
       _match.alliance = _selectedAlliance;
       _match.team = Team()
