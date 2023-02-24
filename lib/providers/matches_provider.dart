@@ -5,12 +5,26 @@ import 'package:flutter/foundation.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 
 class MatchesProvider with ChangeNotifier {
-  final List<Match> _matches = [];
+  final Map<int?, Match> _matches = {};
 
-  List<Match> get matches => _matches;
+  List<Match> get matches => _matches.values.toList();
+
+  Match match(int number) {
+    return _matches[number]!;
+  }
 
   void addMatch(Match match) {
-    _matches.add(match);
+    _matches[match.number] = match;
+    notifyListeners();
+  }
+
+  updateMatch(int number, Function(Match m) action) {
+    action(_matches[number]!);
+    notifyListeners();
+  }
+
+  update(Function(MatchesProvider provider) callback) {
+    callback(this);
     notifyListeners();
   }
 }

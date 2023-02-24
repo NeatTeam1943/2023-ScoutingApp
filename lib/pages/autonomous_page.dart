@@ -7,7 +7,9 @@ import 'package:neatteam_scouting_2023/enums/charge_station.dart';
 import 'package:neatteam_scouting_2023/models/autonomous.dart';
 import 'package:neatteam_scouting_2023/models/cycle.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
+import 'package:neatteam_scouting_2023/utils/match_state.dart';
 import 'package:neatteam_scouting_2023/widgets/cycles_list.dart';
+import 'package:neatteam_scouting_2023/widgets/in_game_action_bar.dart';
 
 class AutonomousPage extends StatefulWidget {
   const AutonomousPage({super.key});
@@ -18,9 +20,8 @@ class AutonomousPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AutonomousState();
 }
 
-class _AutonomousState extends State<AutonomousPage> {
+class _AutonomousState extends MatchState<AutonomousPage> {
   final _formKey = GlobalKey<FormState>();
-  Autonomous model = Autonomous();
 
   final _changeStateColors = <ChargeStationState, Color>{
     ChargeStationState.failed: Colors.redAccent,
@@ -31,21 +32,33 @@ class _AutonomousState extends State<AutonomousPage> {
   @override
   void initState() {
     super.initState();
-    // TODO: implement initState
-    model.chargeStationState = ChargeStationState.failed;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (snapshot.autonomous == null) {
+        updateMatch((m) => m.autonomous = Autonomous());
+      }
+    });
   }
 
   void _setChargeStationState(ChargeStationState css) {
-    setState(() {
-      model.chargeStationState = css;
-    });
+    updateMatch((m) => m.autonomous!.chargeStationState = css);
   }
+
+  bool get didChargeStation =>
+      match.autonomous != null ? match.autonomous!.didChargeStation : false;
+
+  ChargeStationState get chargeStationStateColorValue =>
+      match.autonomous != null
+          ? (match.autonomous!.chargeStationState ?? ChargeStationState.failed)
+          : ChargeStationState.failed;
+
+  List<Cycle> get cycles =>
+      match.autonomous != null ? match.autonomous!.cycles : [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Autonomous"),
+      appBar: const InGameActionBar(
+        title: 'Autonomous',
       ),
       body: Form(
         key: _formKey,
@@ -53,10 +66,10 @@ class _AutonomousState extends State<AutonomousPage> {
           children: [
             StyleFormField(
               field: CheckboxListTile(
-                value: model.didChargeStation,
+                value: didChargeStation,
                 onChanged: (value) {
-                  setState(() {
-                    model.didChargeStation = value!;
+                  updateMatch((m) {
+                    m.autonomous?.didChargeStation = value!;
                   });
                 },
                 title: const Text("Charged"),
@@ -67,8 +80,8 @@ class _AutonomousState extends State<AutonomousPage> {
               child: const Text("Charge station state"),
             ),
             CupertinoSlidingSegmentedControl<ChargeStationState>(
-              thumbColor: _changeStateColors[model.chargeStationState]!,
-              groupValue: model.chargeStationState,
+              thumbColor: _changeStateColors[chargeStationStateColorValue]!,
+              groupValue: match.autonomous?.chargeStationState,
               children: const <ChargeStationState, Widget>{
                 ChargeStationState.failed: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
@@ -98,17 +111,16 @@ class _AutonomousState extends State<AutonomousPage> {
             ),
             StyleFormField(
               field: CheckboxListTile(
-                value: model.isGamePieceInRobot,
+                value: match.autonomous?.isGamePieceInRobot,
+                tristate: true,
                 onChanged: (value) {
-                  setState(() {
-                    model.isGamePieceInRobot = value!;
-                  });
+                  updateMatch((m) => m.autonomous?.isGamePieceInRobot = value!);
                 },
                 title: const Text("Robot has game piece"),
               ),
             ),
             CyclesList(
-              list: model.cycles,
+              list: cycles,
             ),
           ],
         ),
@@ -116,9 +128,8 @@ class _AutonomousState extends State<AutonomousPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          setState(() {
-            model.cycles.add(Cycle(cycleNumber: model.cycles.length + 1));
-          });
+          updateMatch((m) => m.autonomous?.cycles
+              .add(Cycle(cycleNumber: m.autonomous!.cycles.length + 1)));
         },
         label: const Text('Add cycle'),
         icon: const Icon(Icons.add),
