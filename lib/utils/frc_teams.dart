@@ -19,4 +19,12 @@ class FrcTeams {
           ..name = e[1])
         .toList();
   }
+
+  /// Extract team number from "<Team name> #<Team number>"
+  static Team makeTeamFromText(String fullTeamText) {
+    List<String> parts = fullTeamText.split(" #");
+    return Team()
+      ..number = int.parse(parts[1])
+      ..name = parts[0];
+  }
 }

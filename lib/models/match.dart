@@ -26,4 +26,27 @@ class Match {
   Autonomous? autonomous;
   Teleop? teleop;
   Endgame? endgame;
+
+  incrementFouls(type) {
+    if (type == 'technical_foul') {
+      technicalFouls++;
+    } else {
+      fouls++;
+    }
+  }
+
+  decrementFouls(type) {
+    if (type == 'technical_foul' && technicalFouls > 0) {
+      technicalFouls--;
+    } else if (fouls > 0) {
+      fouls--;
+    }
+  }
+
+  getFouls(type) {
+    if (type == 'technical_foul') {
+      return technicalFouls;
+    }
+    return fouls;
+  }
 }
