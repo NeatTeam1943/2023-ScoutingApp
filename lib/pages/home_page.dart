@@ -49,6 +49,13 @@ class HomePage extends StatelessWidget {
                 title: Text('Match #${matches[index].number}'),
                 subtitle: Text(
                     '${matches[index].team.name} #${matches[index].team.number}'),
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/match',
+                    arguments: matches[index].number,
+                  );
+                },
               ),
             ),
           ),

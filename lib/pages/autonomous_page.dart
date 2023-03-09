@@ -8,6 +8,7 @@ import 'package:neatteam_scouting_2023/models/autonomous.dart';
 import 'package:neatteam_scouting_2023/models/cycle.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/match_state.dart';
+import 'package:neatteam_scouting_2023/widgets/charge_state_field.dart';
 import 'package:neatteam_scouting_2023/widgets/cycles_list.dart';
 import 'package:neatteam_scouting_2023/widgets/in_game_action_bar.dart';
 
@@ -22,12 +23,6 @@ class AutonomousPage extends StatefulWidget {
 
 class _AutonomousState extends MatchState<AutonomousPage> {
   final _formKey = GlobalKey<FormState>();
-
-  final _changeStateColors = <ChargeStationState, Color>{
-    ChargeStationState.failed: Colors.redAccent,
-    ChargeStationState.engaged: Colors.blueAccent,
-    ChargeStationState.docked: Colors.greenAccent
-  };
 
   @override
   void initState() {
@@ -45,6 +40,9 @@ class _AutonomousState extends MatchState<AutonomousPage> {
 
   bool get didChargeStation =>
       match.autonomous != null ? match.autonomous!.didChargeStation : false;
+
+  bool get isGamePieceInRobot =>
+      match.autonomous != null ? match.autonomous!.isGamePieceInRobot : false;
 
   ChargeStationState get chargeStationStateColorValue =>
       match.autonomous != null
@@ -79,49 +77,30 @@ class _AutonomousState extends MatchState<AutonomousPage> {
               padding: const EdgeInsets.all(20.0),
               child: const Text("Charge station state"),
             ),
-            CupertinoSlidingSegmentedControl<ChargeStationState>(
-              thumbColor: _changeStateColors[chargeStationStateColorValue]!,
-              groupValue: match.autonomous?.chargeStationState,
-              children: const <ChargeStationState, Widget>{
-                ChargeStationState.failed: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Failed',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                ChargeStationState.engaged: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Engaged',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                ChargeStationState.docked: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Docked',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-              },
-              onValueChanged: (value) {
+            ChargeStateField(
+              value: match.autonomous?.chargeStationState,
+              onChange: (value) {
                 _setChargeStationState(value!);
               },
             ),
             StyleFormField(
               field: CheckboxListTile(
-                value: match.autonomous?.isGamePieceInRobot,
-                tristate: true,
+                value: isGamePieceInRobot,
                 onChanged: (value) {
-                  updateMatch((m) => m.autonomous?.isGamePieceInRobot = value!);
+                  updateMatch((m) {
+                    m.autonomous?.isGamePieceInRobot = value!;
+                  });
                 },
                 title: const Text("Robot has game piece"),
               ),
             ),
             CyclesList(
-              list: cycles,
-            ),
+                contextTitle: "Autonomous",
+                list: cycles,
+                updateCycle: (int index, Function(Cycle cycle) action) {
+                  updateMatch((m) => m.autonomous?.updateCycle(index, action));
+                },
+                match: match.number!),
           ],
         ),
       ),

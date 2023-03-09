@@ -5,4 +5,8 @@ class Teleop {
   Teleop() : cycles = [];
 
   List<Cycle> cycles;
+
+  updateCycle(int index, Function(Cycle cycle) action) {
+    action(cycles[index]);
+  }
 }

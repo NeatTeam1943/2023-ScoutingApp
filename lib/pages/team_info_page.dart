@@ -173,14 +173,6 @@ class _TeamInfoForm extends State<TeamInfoPage> {
     return null;
   }
 
-  /// Extract team number from "<Team name> #<Team number>"
-  Team _makeTeamFromText(String fullTeamText) {
-    List<String> parts = fullTeamText.split(" #");
-    return Team()
-      ..number = int.parse(parts[1])
-      ..name = parts[0];
-  }
-
   /// Validate form and submit it (Moving to the next page [MatchPage])
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -190,11 +182,11 @@ class _TeamInfoForm extends State<TeamInfoPage> {
 
       _match.number = int.parse(_matchNumberController.text);
       _match.alliance = _selectedAlliance;
-      _match.team = _makeTeamFromText(_selectedTeamController.value!);
+      _match.team = FrcTeams.makeTeamFromText(_selectedTeamController.value!);
       _match.driverStation = _selectedDriverStation;
 
       Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
-      Navigator.pushNamed(context, '/autonomous', arguments: _match.number);
+      Navigator.pushNamed(context, '/match', arguments: _match.number);
     }
   }
 

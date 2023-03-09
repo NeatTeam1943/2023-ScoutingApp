@@ -12,4 +12,8 @@ class Autonomous {
   bool didChargeStation;
   ChargeStationState? chargeStationState;
   bool isGamePieceInRobot;
+
+  void updateCycle(int index, Function(Cycle cycle) action) {
+    action(cycles[index]);
+  }
 }

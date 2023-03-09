@@ -6,9 +6,12 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:neatteam_scouting_2023/pages/autonomous_page.dart';
+import 'package:neatteam_scouting_2023/pages/cycle_page.dart';
+import 'package:neatteam_scouting_2023/pages/endgame_page.dart';
 import 'package:neatteam_scouting_2023/pages/home_page.dart';
 import 'package:neatteam_scouting_2023/pages/match_page.dart';
 import 'package:neatteam_scouting_2023/pages/team_info_page.dart';
+import 'package:neatteam_scouting_2023/pages/teleop_page.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 
 void main() {
@@ -28,6 +31,9 @@ class ScoutingApp extends StatelessWidget {
         TeamInfoPage.routeName: (context) => const TeamInfoPage(),
         MatchPage.routeName: (context) => const MatchPage(),
         AutonomousPage.routeName: (context) => const AutonomousPage(),
+        TeleopPage.routeName: (context) => const TeleopPage(),
+        EndgamePage.routeName: (context) => const EndgamePage(),
+        CyclePage.routeName: (context) => const CyclePage(),
       },
     );
   }

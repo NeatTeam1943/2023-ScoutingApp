@@ -22,9 +22,4 @@ class MatchesProvider with ChangeNotifier {
     action(_matches[number]!);
     notifyListeners();
   }
-
-  update(Function(MatchesProvider provider) callback) {
-    callback(this);
-    notifyListeners();
-  }
 }
