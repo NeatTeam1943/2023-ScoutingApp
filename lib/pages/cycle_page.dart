@@ -16,6 +16,7 @@ import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
 import '../providers/matches_provider.dart';
+import '../widgets/in_game_action_bar.dart';
 
 class CyclePageProps {
   const CyclePageProps({
@@ -83,11 +84,13 @@ class CycleState extends State<CyclePage> {
 
   @override
   Widget build(BuildContext context) {
+    Match match =
+        Provider.of<MatchesProvider>(context, listen: false).match(props.match);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "${props.title} - Cycle ${cycle.cycleNumber}",
-        ),
+      appBar: InGameActionBar(
+        match: match,
+        title: "${props.title} - Cycle ${cycle.cycleNumber}",
       ),
       body: Form(
           child: Column(

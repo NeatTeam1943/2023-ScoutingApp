@@ -9,7 +9,12 @@ import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 
 class MatchState<T extends StatefulWidget> extends State<T> {
-  int get _number => ModalRoute.of(context)!.settings.arguments as int;
+  MatchState({Match? match}) : _match = match;
+
+  final Match? _match;
+
+  int get _number =>
+      _match?.number ?? ModalRoute.of(context)!.settings.arguments as int;
 
   /// The current match
   Match get match => Provider.of<MatchesProvider>(context).match(_number);
