@@ -11,6 +11,7 @@ import 'package:neatteam_scouting_2023/enums/driver_station.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
+import 'package:neatteam_scouting_2023/storage.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
 
@@ -41,6 +42,14 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   void initState() {
     super.initState();
     FrcTeams.getAll().then((teams) => setState(() => _teams = teams));
+    initAsyncState();
+  }
+
+  Future<void> initAsyncState() async {
+    String? scouterName = await Storage.getScouterName();
+    if (scouterName != null) {
+      _scouterNameController.text = scouterName;
+    }
   }
 
   @override
@@ -205,6 +214,8 @@ class _TeamInfoForm extends State<TeamInfoPage> {
       _match.alliance = _selectedAlliance;
       _match.team = FrcTeams.makeTeamFromText(_selectedTeamController.value!);
       _match.driverStation = _selectedDriverStation;
+
+      Storage.saveScouterName(_match.scouterName);
 
       Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
       Navigator.pushNamed(context, '/autonomous', arguments: _match.number);
