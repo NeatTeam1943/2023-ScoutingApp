@@ -79,6 +79,7 @@ class _AutonomousState extends MatchState<AutonomousPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: InGameActionBar(
+        showFinish: false,
         match: match,
         title: const Text('Autonomous'),
       ),

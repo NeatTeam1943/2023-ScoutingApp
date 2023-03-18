@@ -32,9 +32,8 @@ class MatchState<T extends StatefulWidget> extends State<T> {
 
   void addCycle(List<Cycle> cycles, {bool? isHalf}) {
     Cycle cycle = Cycle(cycleNumber: cycles.length + 1);
-    if (isHalf ??
-        false ||
-            (cycles.isNotEmpty && !cycles[cycles.length - 1].isSuccessful)) {
+    if ((isHalf ?? false) ||
+        (cycles.isNotEmpty && !cycles[cycles.length - 1].isSuccessful)) {
       cycle.isHalf = true;
     }
 

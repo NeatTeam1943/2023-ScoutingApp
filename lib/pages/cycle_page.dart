@@ -74,6 +74,10 @@ class CycleState extends State<CyclePage> {
       } else {
         currentTime = (snapshot.cycleTime! * 1000).toInt();
       }
+
+      if (props.title == 'Auto') {
+        snapshot.pickupZone = PickupZone.floor;
+      }
     });
   }
 
@@ -137,6 +141,7 @@ class CycleState extends State<CyclePage> {
 
     return Scaffold(
       appBar: InGameActionBar(
+        showFinish: false,
         match: match,
         title: StreamBuilder<int>(
           stream: _stopWatchTimer.rawTime,
@@ -157,60 +162,67 @@ class CycleState extends State<CyclePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // Is Defended field
-                    StyleFormField(
-                      field: CheckboxListTile(
-                        value: cycle!.isDefended,
-                        title: const Text("Defended"),
-                        onChanged: (value) {
-                          props.updateCycle((Cycle cycle) {
-                            cycle.isDefended = value!;
-                            cycle.defendingTeam = null;
-                          });
-                        },
-                      ),
-                    ),
-
-                    // Defending team field
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24)
-                          .copyWith(bottom: 16),
-                      child: AbsorbPointer(
-                        absorbing: !cycle!.isDefended,
-                        child: TextDropdownFormField(
-                          controller: _defendingTeamController,
-                          dropdownHeight: 420,
-                          decoration: _outline(
-                            label: 'Select team',
-                            suffixIcon: const Icon(Icons.arrow_drop_down),
-                          ),
-                          onChanged: (dynamic text) {
+                    if (props.title != 'Auto')
+                      // Is Defended field
+                      StyleFormField(
+                        field: CheckboxListTile(
+                          value: cycle!.isDefended,
+                          title: const Text("Defended"),
+                          onChanged: (value) {
                             props.updateCycle((Cycle cycle) {
-                              cycle.defendingTeam =
-                                  FrcTeams.makeTeamFromText(text);
+                              cycle.isDefended = value!;
+                              cycle.defendingTeam = null;
                             });
                           },
-                          options: _teams.map((team) {
-                            return '${team.name} #${team.number}';
-                          }).toList(),
                         ),
                       ),
-                    ),
+
+                    if (props.title != 'Auto')
+                      // Defending team field
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24)
+                            .copyWith(bottom: 16),
+                        child: AbsorbPointer(
+                          absorbing: !cycle!.isDefended,
+                          child: TextDropdownFormField(
+                            controller: _defendingTeamController,
+                            dropdownHeight: 420,
+                            decoration: _outline(
+                              label: 'Select team',
+                              suffixIcon: const Icon(Icons.arrow_drop_down),
+                            ),
+                            onChanged: (dynamic text) {
+                              props.updateCycle((Cycle cycle) {
+                                cycle.defendingTeam =
+                                    FrcTeams.makeTeamFromText(text);
+                              });
+                            },
+                            options: _teams.map((team) {
+                              return '${team.name} #${team.number}';
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 10),
 
                     // Pickup Zone field
                     const Text("Pickup zone"),
-                    StyleFormField(
-                      field: SlidingSegmentedControl<PickupZone>(
-                        value: cycle!.pickupZone,
-                        onChange: (pz) {
-                          props.updateCycle((cycle) => cycle.pickupZone = pz);
-                          checkFinish();
-                        },
-                        segments: PickupZone.values,
-                        colors: {
-                          PickupZone.feeder: Colors.blue.shade600,
-                          PickupZone.floor: Colors.green.shade900,
-                        },
+                    AbsorbPointer(
+                      absorbing: props.title == 'Auto',
+                      child: StyleFormField(
+                        field: SlidingSegmentedControl<PickupZone>(
+                          value: cycle!.pickupZone,
+                          onChange: (pz) {
+                            props.updateCycle((cycle) => cycle.pickupZone = pz);
+                            checkFinish();
+                          },
+                          segments: PickupZone.values,
+                          colors: {
+                            PickupZone.feeder: Colors.blue.shade600,
+                            PickupZone.floor: Colors.green.shade900,
+                          },
+                        ),
                       ),
                     ),
 
