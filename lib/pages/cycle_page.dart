@@ -115,7 +115,7 @@ class CycleState extends State<CyclePage> {
   void checkFinish() {
     Cycle cycle = getCycleSnapshot();
     if (cycle.gamePiece != null &&
-        cycle.pickupZone != null &&
+        (cycle.pickupZone != null || cycle.isHalf) &&
         cycle.gridLevel != null &&
         cycle.gridZone != null) {
       finishCycle();
@@ -206,25 +206,28 @@ class CycleState extends State<CyclePage> {
 
                     const SizedBox(height: 10),
 
-                    // Pickup Zone field
-                    const Text("Pickup zone"),
-                    AbsorbPointer(
-                      absorbing: props.title == 'Auto',
-                      child: StyleFormField(
-                        field: SlidingSegmentedControl<PickupZone>(
-                          value: cycle!.pickupZone,
-                          onChange: (pz) {
-                            props.updateCycle((cycle) => cycle.pickupZone = pz);
-                            checkFinish();
-                          },
-                          segments: PickupZone.values,
-                          colors: {
-                            PickupZone.feeder: Colors.blue.shade600,
-                            PickupZone.floor: Colors.green.shade900,
-                          },
+                    if (!cycle!.isHalf) const Text("Pickup zone"),
+
+                    if (!cycle!.isHalf)
+                      // Pickup Zone field
+                      AbsorbPointer(
+                        absorbing: props.title == 'Auto',
+                        child: StyleFormField(
+                          field: SlidingSegmentedControl<PickupZone>(
+                            value: cycle!.pickupZone,
+                            onChange: (pz) {
+                              props.updateCycle(
+                                  (cycle) => cycle.pickupZone = pz);
+                              checkFinish();
+                            },
+                            segments: PickupZone.values,
+                            colors: {
+                              PickupZone.feeder: Colors.blue.shade600,
+                              PickupZone.floor: Colors.green.shade900,
+                            },
+                          ),
                         ),
                       ),
-                    ),
 
                     // Game Piece field
                     const Text("Game piece"),
