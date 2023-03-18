@@ -59,7 +59,7 @@ class _AutonomousState extends MatchState<AutonomousPage> {
     bool? isSuccessful = await Navigator.of(context).pushNamed(
       '/cycle',
       arguments: CyclePageProps(
-        title: "Autonomous",
+        title: "Auto",
         cycle: index,
         updateCycle: (Function(Cycle cycle) action) {
           updateMatch((m) => m.autonomous?.updateCycle(index, action));
@@ -78,13 +78,15 @@ class _AutonomousState extends MatchState<AutonomousPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const InGameActionBar(
-        title: Text('Autonomous'),
+      appBar: InGameActionBar(
+        match: match,
+        title: const Text('Autonomous'),
       ),
       body: Form(
         key: _formKey,
         child: Column(
           children: [
+            // Did Attempt Stabilizing field
             StyleFormField(
               field: CheckboxListTile(
                 value: didChargeStation,
@@ -96,16 +98,23 @@ class _AutonomousState extends MatchState<AutonomousPage> {
                 title: const Text("Did attempt stabilizing?"),
               ),
             ),
+
+            // Charge Station State field
             Container(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: const Text("Charge station state"),
             ),
-            ChargeStateField(
-              value: match.autonomous?.chargeStationState,
-              onChange: (value) {
-                _setChargeStationState(value!);
-              },
+            AbsorbPointer(
+              absorbing: !(match.autonomous?.didChargeStation ?? true),
+              child: ChargeStateField(
+                value: match.autonomous?.chargeStationState,
+                onChange: (value) {
+                  _setChargeStationState(value!);
+                },
+              ),
             ),
+
+            // Game Piece In Robot field
             StyleFormField(
               field: CheckboxListTile(
                 value: isGamePieceInRobot,
@@ -117,8 +126,10 @@ class _AutonomousState extends MatchState<AutonomousPage> {
                 title: const Text("Robot has game piece"),
               ),
             ),
+
+            // Cycles list
             CyclesList(
-                contextTitle: "Autonomous",
+                contextTitle: "Auto",
                 list: cycles,
                 updateCycle: (int index, Function(Cycle cycle) action) {
                   updateMatch((m) => m.autonomous?.updateCycle(index, action));
@@ -128,10 +139,30 @@ class _AutonomousState extends MatchState<AutonomousPage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: pushCyclePage,
-        label: const Text('Add cycle'),
-        icon: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          // Add cycle
+          FloatingActionButton.extended(
+            onPressed: pushCyclePage,
+            label: const Text('Add cycle'),
+            icon: const Icon(Icons.add),
+          ),
+
+          // Move to teleop
+          FloatingActionButton.extended(
+            heroTag: 'move-page',
+            onPressed: () => Navigator.pushNamed(
+              context,
+              '/teleop',
+              arguments: snapshot.number,
+            ),
+            label: const Text('Teleop'),
+            icon: const Icon(Icons.chevron_right),
+            backgroundColor: Colors.red,
+          ),
+        ],
       ),
     );
   }
