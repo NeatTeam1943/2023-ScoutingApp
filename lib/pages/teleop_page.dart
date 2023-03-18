@@ -33,7 +33,10 @@ class TeleopState extends MatchState<TeleopPage> {
 
   void pushCyclePage() async {
     int index = snapshot.teleop!.cycles.length;
-    updateMatch((m) => addCycle(m.teleop!.cycles));
+    bool half =
+        index == 0 && (snapshot.autonomous?.isGamePieceInRobot ?? false);
+
+    updateMatch((m) => addCycle(m.teleop!.cycles, isHalf: half));
     bool? isSuccessful = await Navigator.of(context).pushNamed(
       '/cycle',
       arguments: CyclePageProps(
@@ -56,8 +59,9 @@ class TeleopState extends MatchState<TeleopPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const InGameActionBar(
-        title: Text('Teleop'),
+      appBar: InGameActionBar(
+        match: match,
+        title: const Text('Teleop'),
       ),
       body: Column(
         children: [
@@ -72,10 +76,30 @@ class TeleopState extends MatchState<TeleopPage> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: pushCyclePage,
-        label: const Text('Add cycle'),
-        icon: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          // Add cycle
+          FloatingActionButton.extended(
+            onPressed: pushCyclePage,
+            label: const Text('Add cycle'),
+            icon: const Icon(Icons.add),
+          ),
+
+          // Move to teleop
+          FloatingActionButton.extended(
+            heroTag: 'move-page',
+            onPressed: () => Navigator.pushNamed(
+              context,
+              '/endgame',
+              arguments: snapshot.number,
+            ),
+            label: const Text('Endgame'),
+            icon: const Icon(Icons.chevron_right),
+            backgroundColor: Colors.red,
+          ),
+        ],
       ),
     );
   }
