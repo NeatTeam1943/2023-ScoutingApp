@@ -85,7 +85,7 @@ class CycleState extends State<CyclePage> {
 
   Cycle? get cycle {
     Match match = Provider.of<MatchesProvider>(context).match(props.match);
-    if (props.title == 'Autonomous') {
+    if (props.title == 'Auto') {
       if (match.autonomous!.cycles.length > props.cycle) {
         return match.autonomous!.cycles[props.cycle];
       }
@@ -101,7 +101,7 @@ class CycleState extends State<CyclePage> {
   Cycle getCycleSnapshot() {
     Match match =
         Provider.of<MatchesProvider>(context, listen: false).match(props.match);
-    if (props.title == 'Autonomous') {
+    if (props.title == 'Auto') {
       return match.autonomous!.cycles[props.cycle];
     } else {
       return match.teleop!.cycles[props.cycle];
@@ -143,10 +143,10 @@ class CycleState extends State<CyclePage> {
           builder: (context, snap) {
             final displayTime =
                 StopWatchTimer.getDisplayTime(currentTime, hours: false);
-            final half = cycle!.isHalf ? " (Half)" : "";
+            final half = cycle!.isHalf ? "(Half)" : "";
 
             return Text(
-                "${props.title} - Cycle ${cycle!.cycleNumber}$half\n$displayTime");
+                "${props.title} - Cycle ${cycle!.cycleNumber}\n$half $displayTime");
           },
         ),
       ),
