@@ -26,13 +26,14 @@ class TeamInfoPage extends StatefulWidget {
 class _TeamInfoForm extends State<TeamInfoPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _scouterNameController = TextEditingController();
   final _matchNumberController = TextEditingController();
   final _selectedTeamController = DropdownEditingController<String>();
 
   DriverStation? _selectedDriverStation = DriverStation.first;
   Alliance? _selectedAlliance = Alliance.blue;
 
-  final _match = Match(scouterName: '');
+  final _match = Match();
 
   List<Team> _teams = [];
 
@@ -44,6 +45,7 @@ class _TeamInfoForm extends State<TeamInfoPage> {
 
   @override
   void dispose() {
+    _scouterNameController.dispose();
     _matchNumberController.dispose();
     _selectedTeamController.dispose();
     super.dispose();
@@ -58,6 +60,15 @@ class _TeamInfoForm extends State<TeamInfoPage> {
           key: _formKey,
           child: Column(
             children: [
+              // Scouter Name field
+              StyleFormField(
+                field: TextFormField(
+                  controller: _scouterNameController,
+                  validator: _validateScouterName,
+                  decoration: _outline(label: 'Scouter name'),
+                ),
+              ),
+
               // Match number field
               StyleFormField(
                 field: TextFormField(
@@ -135,6 +146,15 @@ class _TeamInfoForm extends State<TeamInfoPage> {
     );
   }
 
+  /// Returns error message ([String]) in case [value] is empty
+  String? _validateScouterName(value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter scouter name!';
+    }
+
+    return null;
+  }
+
   /// Returns error message ([String]) in case [value] is not int
   String? _validateMatchNumber(value) {
     if (value == null || value.isEmpty) {
@@ -180,6 +200,7 @@ class _TeamInfoForm extends State<TeamInfoPage> {
         return;
       }
 
+      _match.scouterName = _scouterNameController.text;
       _match.number = int.parse(_matchNumberController.text);
       _match.alliance = _selectedAlliance;
       _match.team = FrcTeams.makeTeamFromText(_selectedTeamController.value!);

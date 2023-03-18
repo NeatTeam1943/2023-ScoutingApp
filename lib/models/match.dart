@@ -7,7 +7,7 @@ import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/models/teleop.dart';
 
 class Match {
-  Match({required this.scouterName})
+  Match({this.scouterName = ''})
       : fouls = 0,
         technicalFouls = 0,
         team = Team(),
