@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:neatteam_scouting_2023/cycle_data_csv.dart';
 import 'package:neatteam_scouting_2023/match_data_csv.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
@@ -16,6 +17,86 @@ class HomePage extends StatelessWidget {
   static const routeName = '/';
 
   final String title;
+
+  List<Match>? _getMatches(BuildContext context) {
+    List<Match> matches =
+        Provider.of<MatchesProvider>(context, listen: false).matches;
+
+    if (matches.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No matches data found'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      return null;
+    }
+
+    return matches;
+  }
+
+  void _saveMatchesCSV(BuildContext context, List<Match> matches) {
+    String matchesCSV = makeMatchDataCSV(matches);
+    saveToDownloads(csv: matchesCSV, filename: 'GameData');
+  }
+
+  void _saveCyclesCSV(BuildContext context, List<Match> matches) {
+    String cyclesCSV = makeCycleDataCSV(matches);
+    saveToDownloads(csv: cyclesCSV, filename: 'CycleData');
+  }
+
+  void _openShareBottomSheet(BuildContext context) {
+    List<Match>? matches = _getMatches(context);
+    if (matches == null) {
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 200,
+          child: Column(
+            children: [
+              // Bottom Sheet Title
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Export CSV',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Export Matches CSV
+              ElevatedButton(
+                child: const Text(
+                  'Game Data',
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () => _saveMatchesCSV(context, matches),
+              ),
+
+              // Export Cycles CSV
+              ElevatedButton(
+                child: const Text(
+                  'Cycles Data',
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () => _saveCyclesCSV(context, matches),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +110,7 @@ class HomePage extends StatelessWidget {
             centerTitle: false,
             actions: [
               TextButton.icon(
-                onPressed: () => _saveCSV(context),
+                onPressed: () => _openShareBottomSheet(context),
                 icon: const Icon(Icons.share),
                 label: const Text("Share"),
                 style: TextButton.styleFrom(foregroundColor: Colors.white),
@@ -62,23 +143,5 @@ class HomePage extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _saveCSV(context) {
-    List<Match> matches =
-        Provider.of<MatchesProvider>(context, listen: false).matches;
-
-    if (matches.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No matches data found'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
-
-    String csv = makeMatchDataCSV(matches);
-    saveToDownloads(filename: 'match-data.csv', content: csv);
   }
 }
