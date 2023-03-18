@@ -46,6 +46,7 @@ dependencies:
   uuid: ^3.0.7
   shared_preferences: ^2.0.18
   json_annotation: ^4.8.0
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:
