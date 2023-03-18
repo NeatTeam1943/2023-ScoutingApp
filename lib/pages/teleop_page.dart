@@ -7,6 +7,7 @@ import 'package:neatteam_scouting_2023/utils/match_state.dart';
 import 'package:neatteam_scouting_2023/widgets/cycles_list.dart';
 import 'package:neatteam_scouting_2023/widgets/in_game_action_bar.dart';
 import '../models/cycle.dart';
+import 'cycle_page.dart';
 
 class TeleopPage extends StatefulWidget {
   const TeleopPage({super.key});
@@ -30,6 +31,28 @@ class TeleopState extends MatchState<TeleopPage> {
 
   List<Cycle> get cycles => match.teleop != null ? match.teleop!.cycles : [];
 
+  void pushCyclePage() async {
+    int index = snapshot.teleop!.cycles.length;
+    updateMatch((m) => addCycle(m.teleop!.cycles));
+    bool? isSuccessful = await Navigator.of(context).pushNamed(
+      '/cycle',
+      arguments: CyclePageProps(
+        title: "Teleop",
+        cycle: index,
+        updateCycle: (Function(Cycle cycle) action) {
+          updateMatch((m) => m.teleop?.updateCycle(index, action));
+        },
+        match: snapshot.number!,
+      ),
+    ) as bool?;
+
+    if (isSuccessful == null) {
+      updateMatch((m) => m.teleop!.cycles.removeLast());
+    } else if (isSuccessful) {
+      pushCyclePage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +73,7 @@ class TeleopState extends MatchState<TeleopPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          updateMatch((m) => addCycle(m.teleop!.cycles));
-        },
+        onPressed: pushCyclePage,
         label: const Text('Add cycle'),
         icon: const Icon(Icons.add),
       ),

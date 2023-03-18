@@ -11,6 +11,7 @@ import 'package:neatteam_scouting_2023/utils/match_state.dart';
 import 'package:neatteam_scouting_2023/widgets/charge_state_field.dart';
 import 'package:neatteam_scouting_2023/widgets/cycles_list.dart';
 import 'package:neatteam_scouting_2023/widgets/in_game_action_bar.dart';
+import 'cycle_page.dart';
 
 class AutonomousPage extends StatefulWidget {
   const AutonomousPage({super.key});
@@ -52,6 +53,28 @@ class _AutonomousState extends MatchState<AutonomousPage> {
   List<Cycle> get cycles =>
       match.autonomous != null ? match.autonomous!.cycles : [];
 
+  void pushCyclePage() async {
+    int index = snapshot.autonomous!.cycles.length;
+    updateMatch((m) => addCycle(m.autonomous!.cycles));
+    bool? isSuccessful = await Navigator.of(context).pushNamed(
+      '/cycle',
+      arguments: CyclePageProps(
+        title: "Autonomous",
+        cycle: index,
+        updateCycle: (Function(Cycle cycle) action) {
+          updateMatch((m) => m.autonomous?.updateCycle(index, action));
+        },
+        match: snapshot.number!,
+      ),
+    ) as bool?;
+
+    if (isSuccessful == null) {
+      updateMatch((m) => m.autonomous!.cycles.removeLast());
+    } else if (isSuccessful) {
+      pushCyclePage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,11 +93,11 @@ class _AutonomousState extends MatchState<AutonomousPage> {
                     m.autonomous?.didChargeStation = value!;
                   });
                 },
-                title: const Text("Charged"),
+                title: const Text("Did attempt stabilizing?"),
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.only(bottom: 20.0),
               child: const Text("Charge station state"),
             ),
             ChargeStateField(
@@ -106,9 +129,7 @@ class _AutonomousState extends MatchState<AutonomousPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          updateMatch((m) => addCycle(m.autonomous!.cycles));
-        },
+        onPressed: pushCyclePage,
         label: const Text('Add cycle'),
         icon: const Icon(Icons.add),
       ),
