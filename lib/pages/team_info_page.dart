@@ -186,7 +186,7 @@ class _TeamInfoForm extends State<TeamInfoPage> {
       _match.driverStation = _selectedDriverStation;
 
       Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
-      Navigator.pushNamed(context, '/match', arguments: _match.number);
+      Navigator.pushNamed(context, '/autonomous', arguments: _match.number);
     }
   }
 
