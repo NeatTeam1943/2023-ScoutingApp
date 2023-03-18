@@ -6,7 +6,7 @@ class Autonomous {
   Autonomous()
       : cycles = [],
         didChargeStation = false,
-        isGamePieceInRobot = true;
+        isGamePieceInRobot = false;
 
   List<Cycle> cycles;
   bool didChargeStation;
