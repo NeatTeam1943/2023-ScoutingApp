@@ -10,7 +10,8 @@ class Match {
   Match({required this.scouterName})
       : fouls = 0,
         technicalFouls = 0,
-        team = Team();
+        team = Team(),
+        finished = false;
 
   String scouterName;
 
@@ -26,6 +27,8 @@ class Match {
   Autonomous? autonomous;
   Teleop? teleop;
   Endgame? endgame;
+
+  bool finished;
 
   incrementFouls(type) {
     if (type == 'technical_foul') {
