@@ -10,7 +10,8 @@ class Cycle {
     required this.cycleNumber,
     this.isHalf = false,
   })  : isDefended = false,
-        isSuccessful = true;
+        isSuccessful = true,
+        finished = false;
 
   int cycleNumber;
   bool isDefended;
@@ -22,4 +23,6 @@ class Cycle {
   double? cycleTime;
   bool isSuccessful;
   bool isHalf;
+
+  bool finished;
 }

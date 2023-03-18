@@ -1,7 +1,7 @@
 enum GridZone {
-  nearFeeder(1),
+  onFeeder(1),
   coOp(2),
-  nearBorder(3);
+  onBorder(3);
 
   const GridZone(this.value);
   final int value;

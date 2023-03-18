@@ -42,7 +42,7 @@ class EndgameState extends MatchState<EndgamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const InGameActionBar(
-        title: 'Endgame',
+        title: Text('Endgame'),
       ),
       body: Form(
         key: _formKey,

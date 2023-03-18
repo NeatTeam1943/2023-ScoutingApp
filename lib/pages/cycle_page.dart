@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:dropdown_plus/dropdown_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 // Project imports:
 import 'package:neatteam_scouting_2023/enums/game_piece.dart';
@@ -15,6 +16,7 @@ import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
+import 'package:neatteam_scouting_2023/widgets/sliding_segmented_control.dart';
 import '../providers/matches_provider.dart';
 import '../widgets/in_game_action_bar.dart';
 
@@ -45,6 +47,11 @@ class CycleState extends State<CyclePage> {
   List<Team> _teams = [];
   final _defendingTeamController = DropdownEditingController<String>();
 
+  int currentTime = 0;
+  final StopWatchTimer _stopWatchTimer = StopWatchTimer(
+    mode: StopWatchMode.countUp,
+  );
+
   CyclePageProps get props =>
       ModalRoute.of(context)!.settings.arguments as CyclePageProps;
 
@@ -60,16 +67,35 @@ class CycleState extends State<CyclePage> {
               '${snapshot.defendingTeam?.name} #${snapshot.defendingTeam?.number}';
         });
       }
+
+      if (snapshot.cycleTime == null) {
+        _stopWatchTimer.onStartTimer();
+        _stopWatchTimer.rawTime.listen((time) => currentTime = time);
+      } else {
+        currentTime = (snapshot.cycleTime! * 1000).toInt();
+      }
     });
   }
 
-  Cycle get cycle {
+  @override
+  void dispose() async {
+    super.dispose();
+    await _stopWatchTimer.dispose();
+  }
+
+  Cycle? get cycle {
     Match match = Provider.of<MatchesProvider>(context).match(props.match);
     if (props.title == 'Autonomous') {
-      return match.autonomous!.cycles[props.cycle];
+      if (match.autonomous!.cycles.length > props.cycle) {
+        return match.autonomous!.cycles[props.cycle];
+      }
     } else {
-      return match.teleop!.cycles[props.cycle];
+      if (match.teleop!.cycles.length > props.cycle) {
+        return match.teleop!.cycles[props.cycle];
+      }
     }
+
+    return null;
   }
 
   Cycle getCycleSnapshot() {
@@ -82,111 +108,169 @@ class CycleState extends State<CyclePage> {
     }
   }
 
+  void checkFinish() {
+    Cycle cycle = getCycleSnapshot();
+    if (cycle.gamePiece != null &&
+        cycle.pickupZone != null &&
+        cycle.gridLevel != null &&
+        cycle.gridZone != null) {
+      finishCycle();
+    }
+  }
+
+  void finishCycle() {
+    Cycle cycle = getCycleSnapshot();
+    _stopWatchTimer.onStopTimer();
+    cycle.cycleTime = currentTime / 1000.0;
+    Navigator.pop(context, cycle.isSuccessful);
+    cycle.finished = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     Match match =
         Provider.of<MatchesProvider>(context, listen: false).match(props.match);
 
+    if (cycle == null) {
+      return const Scaffold();
+    }
+
     return Scaffold(
       appBar: InGameActionBar(
         match: match,
-        title: "${props.title} - Cycle ${cycle.cycleNumber}",
+        title: StreamBuilder<int>(
+          stream: _stopWatchTimer.rawTime,
+          builder: (context, snap) {
+            final displayTime =
+                StopWatchTimer.getDisplayTime(currentTime, hours: false);
+            final half = cycle!.isHalf ? " (Half)" : "";
+
+            return Text(
+                "${props.title} - Cycle ${cycle!.cycleNumber}$half\n$displayTime");
+          },
+        ),
       ),
       body: Form(
-          child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  StyleFormField(
-                    field: CheckboxListTile(
-                      value: cycle.isDefended,
-                      title: const Text("Defended"),
-                      onChanged: (value) {
-                        props.updateCycle((Cycle cycle) {
-                          cycle.isDefended = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  StyleFormField(
-                    field: TextDropdownFormField(
-                      controller: _defendingTeamController,
-                      dropdownHeight: 420,
-                      decoration: _outline(
-                        label: 'Select team',
-                        suffixIcon: const Icon(Icons.arrow_drop_down),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Is Defended field
+                    StyleFormField(
+                      field: CheckboxListTile(
+                        value: cycle!.isDefended,
+                        title: const Text("Defended"),
+                        onChanged: (value) {
+                          props.updateCycle((Cycle cycle) {
+                            cycle.isDefended = value!;
+                            cycle.defendingTeam = null;
+                          });
+                        },
                       ),
-                      onChanged: (dynamic text) {
-                        props.updateCycle((Cycle cycle) {
-                          cycle.defendingTeam = FrcTeams.makeTeamFromText(text);
-                        });
-                      },
-                      options: _teams.map((team) {
-                        return '${team.name} #${team.number}';
-                      }).toList(),
                     ),
-                  ),
-                  StyleFormField(
-                    field: DropdownButtonFormField<GamePiece>(
-                      value: cycle.gamePiece,
-                      decoration: _outline(label: 'Game piece'),
-                      onChanged: (gp) =>
-                          props.updateCycle((cycle) => cycle.gamePiece = gp),
-                      items: GamePiece.values.map((gp) {
-                        return DropdownMenuItem<GamePiece>(
-                          value: gp,
-                          child: Text(gp.name),
-                        );
-                      }).toList(),
+
+                    // Defending team field
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24)
+                          .copyWith(bottom: 16),
+                      child: AbsorbPointer(
+                        absorbing: !cycle!.isDefended,
+                        child: TextDropdownFormField(
+                          controller: _defendingTeamController,
+                          dropdownHeight: 420,
+                          decoration: _outline(
+                            label: 'Select team',
+                            suffixIcon: const Icon(Icons.arrow_drop_down),
+                          ),
+                          onChanged: (dynamic text) {
+                            props.updateCycle((Cycle cycle) {
+                              cycle.defendingTeam =
+                                  FrcTeams.makeTeamFromText(text);
+                            });
+                          },
+                          options: _teams.map((team) {
+                            return '${team.name} #${team.number}';
+                          }).toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                  StyleFormField(
-                    field: DropdownButtonFormField<PickupZone>(
-                      value: cycle.pickupZone,
-                      decoration: _outline(label: 'Pickup zone'),
-                      onChanged: (pz) =>
-                          props.updateCycle((cycle) => cycle.pickupZone = pz),
-                      items: PickupZone.values.map((pz) {
-                        return DropdownMenuItem<PickupZone>(
-                          value: pz,
-                          child: Text(pz.name),
-                        );
-                      }).toList(),
+
+                    // Pickup Zone field
+                    const Text("Pickup zone"),
+                    StyleFormField(
+                      field: SlidingSegmentedControl<PickupZone>(
+                        value: cycle!.pickupZone,
+                        onChange: (pz) {
+                          props.updateCycle((cycle) => cycle.pickupZone = pz);
+                          checkFinish();
+                        },
+                        segments: PickupZone.values,
+                        colors: {
+                          PickupZone.feeder: Colors.blue.shade600,
+                          PickupZone.floor: Colors.green.shade900,
+                        },
+                      ),
                     ),
-                  ),
-                  StyleFormField(
-                    field: DropdownButtonFormField<GridLevel>(
-                      value: cycle.gridLevel,
-                      decoration: _outline(label: 'Grid level'),
-                      onChanged: (gl) =>
-                          props.updateCycle((cycle) => cycle.gridLevel = gl),
-                      items: GridLevel.values.map((gl) {
-                        return DropdownMenuItem<GridLevel>(
-                          value: gl,
-                          child: Text(gl.name),
-                        );
-                      }).toList(),
+
+                    // Game Piece field
+                    const Text("Game piece"),
+                    StyleFormField(
+                      field: SlidingSegmentedControl<GamePiece>(
+                        value: cycle!.gamePiece,
+                        onChange: (gp) {
+                          props.updateCycle((cycle) => cycle.gamePiece = gp);
+                          checkFinish();
+                        },
+                        segments: GamePiece.values,
+                        colors: {
+                          GamePiece.cube: Colors.indigo,
+                          GamePiece.cone: Colors.yellow.shade700,
+                        },
+                      ),
                     ),
-                  ),
-                  StyleFormField(
-                    field: DropdownButtonFormField<GridZone>(
-                      value: cycle.gridZone,
-                      decoration: _outline(label: 'Grid zone'),
-                      onChanged: (gz) =>
-                          props.updateCycle((cycle) => cycle.gridZone = gz),
-                      items: GridZone.values.map((gz) {
-                        return DropdownMenuItem<GridZone>(
-                          value: gz,
-                          child: Text(gz.name),
-                        );
-                      }).toList(),
+
+                    // Grid Level field
+                    const Text("Grid level"),
+                    StyleFormField(
+                      field: SlidingSegmentedControl<GridLevel>(
+                        value: cycle!.gridLevel,
+                        onChange: (gl) {
+                          props.updateCycle((cycle) => cycle.gridLevel = gl);
+                          checkFinish();
+                        },
+                        segments: GridLevel.values,
+                        colors: {
+                          GridLevel.low: Colors.red,
+                          GridLevel.middle: Colors.yellow.shade700,
+                          GridLevel.high: Colors.green,
+                        },
+                      ),
                     ),
-                  ),
-                  StyleFormField(
-                    field: CheckboxListTile(
-                      value: cycle.isSuccessful,
+
+                    // Grid Zone field
+                    const Text("Grid zone"),
+                    StyleFormField(
+                      field: SlidingSegmentedControl<GridZone>(
+                        value: cycle!.gridZone,
+                        onChange: (gz) {
+                          props.updateCycle((cycle) => cycle.gridZone = gz);
+                          checkFinish();
+                        },
+                        segments: GridZone.values,
+                        colors: {
+                          GridZone.onBorder: Colors.blue.shade600,
+                          GridZone.coOp: Colors.green,
+                          GridZone.onFeeder: Colors.blue.shade600,
+                        },
+                      ),
+                    ),
+
+                    // Is Successful field
+                    CheckboxListTile(
+                      enabled: cycle!.finished,
+                      value: cycle!.isSuccessful,
                       title: const Text("Successful"),
                       onChanged: (value) {
                         props.updateCycle((Cycle cycle) {
@@ -194,10 +278,11 @@ class CycleState extends State<CyclePage> {
                         });
                       },
                     ),
-                  ),
-                  StyleFormField(
-                    field: CheckboxListTile(
-                      value: cycle.isHalf,
+
+                    // Is Half field
+                    CheckboxListTile(
+                      enabled: cycle!.finished,
+                      value: cycle!.isHalf,
                       title: const Text("Half"),
                       onChanged: (value) {
                         props.updateCycle((Cycle cycle) {
@@ -205,26 +290,24 @@ class CycleState extends State<CyclePage> {
                         });
                       },
                     ),
-                  ),
-                  StyleFormField(
-                    field: TextFormField(
-                      autofocus: false,
-                      initialValue: (cycle.cycleTime ?? 0.0).toString(),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        props.updateCycle(
-                            (c) => c.cycleTime = double.tryParse(value));
-                      },
-                      decoration: const InputDecoration(
-                          labelText: "Time docked (in seconds)"),
-                    ),
-                  ),
-                ],
+
+                    Container(height: 100),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          getCycleSnapshot().isSuccessful = false;
+          finishCycle();
+        },
+        label: const Text('Failed'),
+        icon: const Icon(Icons.cancel),
+      ),
     );
   }
 

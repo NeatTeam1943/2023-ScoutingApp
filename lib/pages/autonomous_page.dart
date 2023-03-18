@@ -56,7 +56,7 @@ class _AutonomousState extends MatchState<AutonomousPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const InGameActionBar(
-        title: 'Autonomous',
+        title: Text('Autonomous'),
       ),
       body: Form(
         key: _formKey,
@@ -107,8 +107,7 @@ class _AutonomousState extends MatchState<AutonomousPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          updateMatch((m) => m.autonomous?.cycles
-              .add(Cycle(cycleNumber: m.autonomous!.cycles.length + 1)));
+          updateMatch((m) => addCycle(m.autonomous!.cycles));
         },
         label: const Text('Add cycle'),
         icon: const Icon(Icons.add),

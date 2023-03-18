@@ -34,7 +34,7 @@ class TeleopState extends MatchState<TeleopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const InGameActionBar(
-        title: 'Teleop',
+        title: Text('Teleop'),
       ),
       body: Column(
         children: [
@@ -51,8 +51,7 @@ class TeleopState extends MatchState<TeleopPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          updateMatch((m) => m.teleop?.cycles
-              .add(Cycle(cycleNumber: m.teleop!.cycles.length + 1)));
+          updateMatch((m) => addCycle(m.teleop!.cycles));
         },
         label: const Text('Add cycle'),
         icon: const Icon(Icons.add),

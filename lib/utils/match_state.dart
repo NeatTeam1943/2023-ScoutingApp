@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
+import '../models/cycle.dart';
 
 class MatchState<T extends StatefulWidget> extends State<T> {
   MatchState({Match? match}) : _match = match;
@@ -27,6 +28,17 @@ class MatchState<T extends StatefulWidget> extends State<T> {
   void updateMatch(Function(Match m) action) {
     Provider.of<MatchesProvider>(context, listen: false)
         .updateMatch(_number, action);
+  }
+
+  void addCycle(List<Cycle> cycles, {bool? isHalf}) {
+    Cycle cycle = Cycle(cycleNumber: cycles.length + 1);
+    if (isHalf ??
+        false ||
+            (cycles.isNotEmpty && !cycles[cycles.length - 1].isSuccessful)) {
+      cycle.isHalf = true;
+    }
+
+    cycles.add(cycle);
   }
 
   @override

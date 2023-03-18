@@ -18,7 +18,7 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
     this.match,
   });
 
-  final String title;
+  final Widget title;
   final Match? match;
 
   @override
@@ -28,7 +28,7 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: title,
         elevation: 0,
       ),
       body: Column(
