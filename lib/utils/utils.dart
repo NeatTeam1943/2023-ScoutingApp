@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 // Package imports:
-import 'package:archive/archive_io.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:uuid/uuid.dart';

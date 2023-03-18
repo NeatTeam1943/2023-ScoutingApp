@@ -1,13 +1,10 @@
 // Dart imports:
 import 'dart:convert';
-import 'dart:ui';
 
 // Package imports:
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Project imports:
-import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 import 'models/match.dart';
 
 enum StorageKeys {

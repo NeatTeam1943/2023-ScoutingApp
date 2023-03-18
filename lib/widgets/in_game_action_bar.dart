@@ -1,15 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:provider/provider.dart';
-
 // Project imports:
 import 'package:neatteam_scouting_2023/models/match.dart';
-import 'package:neatteam_scouting_2023/pages/cycle_page.dart';
 import 'package:neatteam_scouting_2023/utils/match_state.dart';
-import '../pages/cycle_page.dart';
-import '../providers/matches_provider.dart';
+
+// Package imports:
 
 class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
   const InGameActionBar({
@@ -93,6 +89,7 @@ class ActionCounter extends StatefulWidget {
   final Match? match;
 
   @override
+  // ignore: no_logic_in_create_state
   State<StatefulWidget> createState() => _ActionCounterState(match: match);
 }
 
