@@ -38,6 +38,15 @@ class MatchesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeMatch(Match match, {bool skipSave = false}) {
+    _matches.remove(match.number);
+    if (!skipSave) {
+      Storage.saveMatches(_matches.values.toList());
+    }
+
+    notifyListeners();
+  }
+
   updateMatch(int number, Function(Match m) action) {
     action(_matches[number]!);
     Storage.saveMatches(_matches.values.toList());

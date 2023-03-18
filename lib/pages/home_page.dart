@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -17,6 +18,10 @@ class HomePage extends StatelessWidget {
   static const routeName = '/';
 
   final String title;
+
+  void _deleteMatch(BuildContext context, Match match) {
+    Provider.of<MatchesProvider>(context, listen: false).removeMatch(match);
+  }
 
   List<Match>? _getMatches(BuildContext context) {
     List<Match> matches =
@@ -126,17 +131,32 @@ class HomePage extends StatelessWidget {
           body: Center(
             child: ListView.builder(
               itemCount: matches.length,
-              itemBuilder: (_, index) => ListTile(
-                title: Text('Match #${matches[index].number}'),
-                subtitle: Text(
-                    '${matches[index].team.name} #${matches[index].team.number}'),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/match',
-                    arguments: matches[index].number,
-                  );
-                },
+              itemBuilder: (_, index) => Slidable(
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) =>
+                          _deleteMatch(context, matches[index]),
+                      backgroundColor: const Color(0xFFFE4A49),
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Delete',
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  title: Text('Match #${matches[index].number}'),
+                  subtitle: Text(
+                      '${matches[index].team.name} #${matches[index].team.number}'),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/match',
+                      arguments: matches[index].number,
+                    );
+                  },
+                ),
               ),
             ),
           ),
