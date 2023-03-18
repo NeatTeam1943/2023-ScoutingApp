@@ -16,10 +16,12 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.match,
+    this.onFinish,
   });
 
   final Widget title;
   final Match? match;
+  final VoidCallback? onFinish;
 
   @override
   Size get preferredSize => const Size.fromHeight(113);
@@ -30,6 +32,28 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
       appBar: AppBar(
         title: title,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.indigo),
+              ),
+              onPressed: match!.finished
+                  ? null
+                  : () {
+                      match!.finished = true;
+                      if (onFinish != null) {
+                        onFinish!();
+                      }
+
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+              child: const Text('Finish'),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
