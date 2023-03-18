@@ -45,6 +45,7 @@ dependencies:
   archive: ^3.3.6
   uuid: ^3.0.7
   shared_preferences: ^2.0.18
+  json_annotation: ^4.8.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +58,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   test: ^1.22.0
+  json_serializable: ^6.6.1
+  build_runner: ^2.3.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
