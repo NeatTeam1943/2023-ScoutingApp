@@ -14,6 +14,7 @@ import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 import 'package:neatteam_scouting_2023/storage.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
+import '../widgets/sliding_segmented_control.dart';
 
 class TeamInfoPage extends StatefulWidget {
   const TeamInfoPage({super.key});
@@ -31,9 +32,6 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   final _matchNumberController = TextEditingController();
   final _selectedTeamController = DropdownEditingController<String>();
 
-  DriverStation? _selectedDriverStation = DriverStation.first;
-  Alliance? _selectedAlliance = Alliance.blue;
-
   final _match = Match();
 
   List<Team> _teams = [];
@@ -42,6 +40,8 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   void initState() {
     super.initState();
     FrcTeams.getAll().then((teams) => setState(() => _teams = teams));
+    _match.alliance = Alliance.blue;
+    _match.driverStation = DriverStation.first;
     initAsyncState();
   }
 
@@ -105,36 +105,31 @@ class _TeamInfoForm extends State<TeamInfoPage> {
               ),
 
               // Alliance selection
+              const Text('Alliance'),
               StyleFormField(
-                field: DropdownButtonFormField<Alliance>(
-                  value: _selectedAlliance,
-                  validator: _validateAlliance,
-                  decoration: _outline(label: 'Select alliance'),
-                  onChanged: (color) =>
-                      setState(() => _selectedAlliance = color),
-                  items: Alliance.values.map((color) {
-                    return DropdownMenuItem<Alliance>(
-                      value: color,
-                      child: Text(color.name),
-                    );
-                  }).toList(),
+                field: SlidingSegmentedControl<Alliance>(
+                  value: _match.alliance,
+                  onChange: (al) => setState(() => _match.alliance = al),
+                  segments: Alliance.values,
+                  colors: const {
+                    Alliance.red: Colors.red,
+                    Alliance.blue: Colors.blue,
+                  },
                 ),
               ),
 
               // Driver station selection
+              const Text('Driver station'),
               StyleFormField(
-                field: DropdownButtonFormField<DriverStation>(
-                  value: _selectedDriverStation,
-                  validator: _validateDriverStation,
-                  decoration: _outline(label: 'Select driver station'),
-                  onChanged: (color) =>
-                      setState(() => _selectedDriverStation = color),
-                  items: DriverStation.values.map((station) {
-                    return DropdownMenuItem<DriverStation>(
-                      value: station,
-                      child: Text(station.name),
-                    );
-                  }).toList(),
+                field: SlidingSegmentedControl<DriverStation>(
+                  value: _match.driverStation,
+                  onChange: (ds) => setState(() => _match.driverStation = ds),
+                  segments: DriverStation.values,
+                  colors: const {
+                    DriverStation.first: Colors.blue,
+                    DriverStation.second: Colors.blue,
+                    DriverStation.third: Colors.blue,
+                  },
                 ),
               ),
 
@@ -184,24 +179,6 @@ class _TeamInfoForm extends State<TeamInfoPage> {
     return null;
   }
 
-  /// Returns error message ([String]) in case [value] is empty
-  String? _validateAlliance(value) {
-    if (value == null) {
-      return 'Please select an alliance!';
-    }
-
-    return null;
-  }
-
-  /// Returns error message ([String]) in case [value] is empty
-  String? _validateDriverStation(value) {
-    if (value == null) {
-      return 'Please select a driver station!';
-    }
-
-    return null;
-  }
-
   /// Validate form and submit it (Moving to the next page [MatchPage])
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -211,9 +188,7 @@ class _TeamInfoForm extends State<TeamInfoPage> {
 
       _match.scouterName = _scouterNameController.text;
       _match.number = int.parse(_matchNumberController.text);
-      _match.alliance = _selectedAlliance;
       _match.team = FrcTeams.makeTeamFromText(_selectedTeamController.value!);
-      _match.driverStation = _selectedDriverStation;
 
       Storage.saveScouterName(_match.scouterName);
 
