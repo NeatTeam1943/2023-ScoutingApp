@@ -22,6 +22,8 @@ String makeMatchDataCSV(List<Match> matches) {
       (match.endgame?.didChargeStation ?? false).toString(),
       match.endgame?.chargeStationState?.name ?? '',
       match.endgame?.dockedTime?.toString() ?? '',
+      match.didDie.toString(),
+      match.notes ?? "",
     ]);
   }
 

@@ -1,8 +1,8 @@
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
-import 'package:neatteam_scouting_2023/cycle_data_csv.dart';
 
 // Project imports:
+import 'package:neatteam_scouting_2023/cycle_data_csv.dart';
 import 'package:neatteam_scouting_2023/enums/alliance.dart';
 import 'package:neatteam_scouting_2023/enums/driver_station.dart';
 import 'package:neatteam_scouting_2023/enums/game_piece.dart';
@@ -17,9 +17,9 @@ import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/models/teleop.dart';
 
 const String expectedMatchDataCSV =
-    "1,1943,NeatTeam,1,blue,3,0,0,false,,false,,\r\n"
-    "2,1943,NeatTeam,2,red,2,0,0,false,,false,,\r\n"
-    "3,1942,Cinderella,23,blue,1,0,0,false,,false,,";
+    "1,1943,NeatTeam,1,blue,3,0,0,false,,false,,,false,\r\n"
+    "2,1943,NeatTeam,2,red,2,0,0,false,,false,,,false,\r\n"
+    "3,1942,Cinderella,23,blue,1,0,0,false,,false,,,false,";
 
 const String expectedCyclesDataCSV =
     "1,1,1943,1,1,Teleop,cube,floor,high,2,true,true,true,1937,9.227\r\n"
@@ -96,11 +96,14 @@ void main() {
 
   group("CSV Generation:", () {
     test("Match data should generate according to DB", () {
-      expect(expectedMatchDataCSV, makeMatchDataCSV(matches));
+      expect(
+        makeMatchDataCSV(matches),
+        expectedMatchDataCSV,
+      );
     });
 
     test("Cycle data should generate according to DB", () {
-      expect(expectedCyclesDataCSV, makeCycleDataCSV(matches));
+      expect(makeCycleDataCSV(matches), expectedCyclesDataCSV);
     });
   });
 }
