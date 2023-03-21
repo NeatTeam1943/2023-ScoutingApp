@@ -296,7 +296,6 @@ class CycleState extends State<CyclePage> {
 
                     // Is Half field
                     CheckboxListTile(
-                      enabled: cycle!.finished,
                       value: cycle!.isHalf,
                       title: const Text("Half"),
                       onChanged: (value) {
