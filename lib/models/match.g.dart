@@ -16,6 +16,7 @@ Match _$MatchFromJson(Map<String, dynamic> json) => Match(
           $enumDecodeNullable(_$DriverStationEnumMap, json['driverStation'])
       ..fouls = json['fouls'] as int
       ..technicalFouls = json['technicalFouls'] as int
+      ..didDie = json['didDie'] as bool
       ..autonomous = json['autonomous'] == null
           ? null
           : Autonomous.fromJson(json['autonomous'] as Map<String, dynamic>)
@@ -25,6 +26,7 @@ Match _$MatchFromJson(Map<String, dynamic> json) => Match(
       ..endgame = json['endgame'] == null
           ? null
           : Endgame.fromJson(json['endgame'] as Map<String, dynamic>)
+      ..notes = json['notes'] as String?
       ..finished = json['finished'] as bool;
 
 Map<String, dynamic> _$MatchToJson(Match instance) => <String, dynamic>{
@@ -35,9 +37,11 @@ Map<String, dynamic> _$MatchToJson(Match instance) => <String, dynamic>{
       'driverStation': _$DriverStationEnumMap[instance.driverStation],
       'fouls': instance.fouls,
       'technicalFouls': instance.technicalFouls,
+      'didDie': instance.didDie,
       'autonomous': instance.autonomous?.toJson(),
       'teleop': instance.teleop?.toJson(),
       'endgame': instance.endgame?.toJson(),
+      'notes': instance.notes,
       'finished': instance.finished,
     };
 
