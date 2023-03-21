@@ -1,8 +1,12 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:provider/provider.dart';
+
 // Project imports:
 import 'package:neatteam_scouting_2023/models/match.dart';
+import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 import 'package:neatteam_scouting_2023/utils/match_state.dart';
 
 // Package imports:
@@ -57,9 +61,14 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
       body: Column(
         children: [
           AppBar(
-            title: const Text('Fouls'),
-            centerTitle: false,
-            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: const Icon(Icons.cancel_outlined),
+              onPressed: () {
+                Provider.of<MatchesProvider>(context, listen: false)
+                    .updateMatch(match!.number!, (m) => m.didDie = !m.didDie);
+              },
+              color: (match?.didDie ?? false) ? Colors.yellow : Colors.white,
+            ),
             actions: [
               const Center(
                 child: Text('F'),

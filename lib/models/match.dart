@@ -16,6 +16,7 @@ class Match {
   Match({this.scouterName = ''})
       : fouls = 0,
         technicalFouls = 0,
+        didDie = false,
         team = Team(),
         finished = false;
 
@@ -29,6 +30,7 @@ class Match {
 
   int fouls;
   int technicalFouls;
+  bool didDie;
 
   Autonomous? autonomous;
   Teleop? teleop;
