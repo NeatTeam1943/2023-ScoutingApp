@@ -23,6 +23,13 @@ class HomePage extends StatelessWidget {
     Provider.of<MatchesProvider>(context, listen: false).removeMatch(match);
   }
 
+  void _deleteAllMatches(BuildContext context) {
+    for (final match
+        in Provider.of<MatchesProvider>(context, listen: false).matches) {
+      Provider.of<MatchesProvider>(context, listen: false).removeMatch(match);
+    }
+  }
+
   List<Match>? _getMatches(BuildContext context) {
     List<Match> matches =
         Provider.of<MatchesProvider>(context, listen: false).matches;
@@ -159,6 +166,15 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: FloatingActionButton.extended(
+            heroTag: 'remove-all-teams',
+            onPressed: () => _deleteAllMatches(context),
+            label: const Text('DELETE ALL'),
+            icon: const Icon(Icons.delete_outline),
+            backgroundColor: Colors.red,
           ),
         );
       },
