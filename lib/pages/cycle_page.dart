@@ -114,7 +114,8 @@ class CycleState extends State<CyclePage> {
 
   void checkFinish() {
     Cycle cycle = getCycleSnapshot();
-    if (cycle.gamePiece != null &&
+    if (!cycle.finished &&
+        cycle.gamePiece != null &&
         (cycle.pickupZone != null || cycle.isHalf) &&
         cycle.gridLevel != null &&
         cycle.gridZone != null) {
