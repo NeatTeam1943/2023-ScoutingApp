@@ -11,8 +11,10 @@ import 'package:neatteam_scouting_2023/enums/driver_station.dart';
 import 'package:neatteam_scouting_2023/models/match.dart';
 import 'package:neatteam_scouting_2023/models/team.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
+import 'package:neatteam_scouting_2023/storage.dart';
 import 'package:neatteam_scouting_2023/styles/style_form_field.dart';
 import 'package:neatteam_scouting_2023/utils/frc_teams.dart';
+import '../widgets/sliding_segmented_control.dart';
 
 class TeamInfoPage extends StatefulWidget {
   const TeamInfoPage({super.key});
@@ -26,13 +28,11 @@ class TeamInfoPage extends StatefulWidget {
 class _TeamInfoForm extends State<TeamInfoPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _scouterNameController = TextEditingController();
   final _matchNumberController = TextEditingController();
   final _selectedTeamController = DropdownEditingController<String>();
 
-  DriverStation? _selectedDriverStation = DriverStation.first;
-  Alliance? _selectedAlliance = Alliance.blue;
-
-  final _match = Match(scouterName: '');
+  final _match = Match();
 
   List<Team> _teams = [];
 
@@ -40,10 +40,21 @@ class _TeamInfoForm extends State<TeamInfoPage> {
   void initState() {
     super.initState();
     FrcTeams.getAll().then((teams) => setState(() => _teams = teams));
+    _match.alliance = Alliance.blue;
+    _match.driverStation = DriverStation.first;
+    initAsyncState();
+  }
+
+  Future<void> initAsyncState() async {
+    String? scouterName = await Storage.getScouterName();
+    if (scouterName != null) {
+      _scouterNameController.text = scouterName;
+    }
   }
 
   @override
   void dispose() {
+    _scouterNameController.dispose();
     _matchNumberController.dispose();
     _selectedTeamController.dispose();
     super.dispose();
@@ -58,6 +69,15 @@ class _TeamInfoForm extends State<TeamInfoPage> {
           key: _formKey,
           child: Column(
             children: [
+              // Scouter Name field
+              StyleFormField(
+                field: TextFormField(
+                  controller: _scouterNameController,
+                  validator: _validateScouterName,
+                  decoration: _outline(label: 'Scouter name'),
+                ),
+              ),
+
               // Match number field
               StyleFormField(
                 field: TextFormField(
@@ -85,36 +105,31 @@ class _TeamInfoForm extends State<TeamInfoPage> {
               ),
 
               // Alliance selection
+              const Text('Alliance'),
               StyleFormField(
-                field: DropdownButtonFormField<Alliance>(
-                  value: _selectedAlliance,
-                  validator: _validateAlliance,
-                  decoration: _outline(label: 'Select alliance'),
-                  onChanged: (color) =>
-                      setState(() => _selectedAlliance = color),
-                  items: Alliance.values.map((color) {
-                    return DropdownMenuItem<Alliance>(
-                      value: color,
-                      child: Text(color.name),
-                    );
-                  }).toList(),
+                field: SlidingSegmentedControl<Alliance>(
+                  value: _match.alliance,
+                  onChange: (al) => setState(() => _match.alliance = al),
+                  segments: Alliance.values,
+                  colors: const {
+                    Alliance.red: Colors.red,
+                    Alliance.blue: Colors.blue,
+                  },
                 ),
               ),
 
               // Driver station selection
+              const Text('Driver station'),
               StyleFormField(
-                field: DropdownButtonFormField<DriverStation>(
-                  value: _selectedDriverStation,
-                  validator: _validateDriverStation,
-                  decoration: _outline(label: 'Select driver station'),
-                  onChanged: (color) =>
-                      setState(() => _selectedDriverStation = color),
-                  items: DriverStation.values.map((station) {
-                    return DropdownMenuItem<DriverStation>(
-                      value: station,
-                      child: Text(station.name),
-                    );
-                  }).toList(),
+                field: SlidingSegmentedControl<DriverStation>(
+                  value: _match.driverStation,
+                  onChange: (ds) => setState(() => _match.driverStation = ds),
+                  segments: DriverStation.values,
+                  colors: const {
+                    DriverStation.first: Colors.blue,
+                    DriverStation.second: Colors.blue,
+                    DriverStation.third: Colors.blue,
+                  },
                 ),
               ),
 
@@ -133,6 +148,15 @@ class _TeamInfoForm extends State<TeamInfoPage> {
         ),
       ),
     );
+  }
+
+  /// Returns error message ([String]) in case [value] is empty
+  String? _validateScouterName(value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter scouter name!';
+    }
+
+    return null;
   }
 
   /// Returns error message ([String]) in case [value] is not int
@@ -155,32 +179,6 @@ class _TeamInfoForm extends State<TeamInfoPage> {
     return null;
   }
 
-  /// Returns error message ([String]) in case [value] is empty
-  String? _validateAlliance(value) {
-    if (value == null) {
-      return 'Please select an alliance!';
-    }
-
-    return null;
-  }
-
-  /// Returns error message ([String]) in case [value] is empty
-  String? _validateDriverStation(value) {
-    if (value == null) {
-      return 'Please select a driver station!';
-    }
-
-    return null;
-  }
-
-  /// Extract team number from "<Team name> #<Team number>"
-  Team _makeTeamFromText(String fullTeamText) {
-    List<String> parts = fullTeamText.split(" #");
-    return Team()
-      ..number = int.parse(parts[1])
-      ..name = parts[0];
-  }
-
   /// Validate form and submit it (Moving to the next page [MatchPage])
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -188,13 +186,14 @@ class _TeamInfoForm extends State<TeamInfoPage> {
         return;
       }
 
+      _match.scouterName = _scouterNameController.text;
       _match.number = int.parse(_matchNumberController.text);
-      _match.alliance = _selectedAlliance;
-      _match.team = _makeTeamFromText(_selectedTeamController.value!);
-      _match.driverStation = _selectedDriverStation;
+      _match.team = FrcTeams.makeTeamFromText(_selectedTeamController.value!);
+
+      Storage.saveScouterName(_match.scouterName);
 
       Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
-      Navigator.pushNamed(context, '/match', arguments: _match);
+      Navigator.pushNamed(context, '/autonomous', arguments: _match.number);
     }
   }
 
