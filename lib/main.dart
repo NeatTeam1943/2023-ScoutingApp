@@ -10,6 +10,7 @@ import 'package:neatteam_scouting_2023/pages/cycle_page.dart';
 import 'package:neatteam_scouting_2023/pages/endgame_page.dart';
 import 'package:neatteam_scouting_2023/pages/home_page.dart';
 import 'package:neatteam_scouting_2023/pages/match_page.dart';
+import 'package:neatteam_scouting_2023/pages/notes_page.dart';
 import 'package:neatteam_scouting_2023/pages/team_info_page.dart';
 import 'package:neatteam_scouting_2023/pages/teleop_page.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
@@ -34,6 +35,7 @@ class ScoutingApp extends StatelessWidget {
         TeleopPage.routeName: (context) => const TeleopPage(),
         EndgamePage.routeName: (context) => const EndgamePage(),
         CyclePage.routeName: (context) => const CyclePage(),
+        NotesPage.routeName: (context) => const NotesPage(),
       },
     );
   }

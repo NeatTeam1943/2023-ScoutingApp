@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:neatteam_scouting_2023/models/match.dart';
+import 'package:neatteam_scouting_2023/pages/notes_page.dart';
 import 'package:neatteam_scouting_2023/providers/matches_provider.dart';
 import 'package:neatteam_scouting_2023/utils/match_state.dart';
 
@@ -51,7 +52,11 @@ class InGameActionBar extends StatelessWidget implements PreferredSizeWidget {
                           onFinish!();
                         }
 
-                        Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.pushNamed(
+                          context,
+                          NotesPage.routeName,
+                          arguments: match!.number,
+                        );
                       },
                 child: const Text('Finish'),
               ),

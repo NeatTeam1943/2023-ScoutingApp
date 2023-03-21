@@ -36,6 +36,7 @@ class Match {
   Teleop? teleop;
   Endgame? endgame;
 
+  String? notes;
   bool finished;
 
   incrementFouls(type) {

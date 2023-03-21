@@ -38,7 +38,7 @@ class _MatchPageState extends MatchState<MatchPage> {
                 ),
                 child: const Text(
                   'AUTONOMOUS',
-                  style: TextStyle(fontSize: 50),
+                  style: TextStyle(fontSize: 46),
                 ),
               ),
             ),
@@ -52,7 +52,7 @@ class _MatchPageState extends MatchState<MatchPage> {
                 ),
                 child: const Text(
                   'TELEOP',
-                  style: TextStyle(fontSize: 50),
+                  style: TextStyle(fontSize: 46),
                 ),
               ),
             ),
@@ -66,7 +66,21 @@ class _MatchPageState extends MatchState<MatchPage> {
                 ),
                 child: const Text(
                   'ENDGAME',
-                  style: TextStyle(fontSize: 50),
+                  style: TextStyle(fontSize: 46),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  '/notes',
+                  arguments: snapshot.number,
+                ),
+                child: const Text(
+                  'MATCH NOTES',
+                  style: TextStyle(fontSize: 46),
                 ),
               ),
             ),
